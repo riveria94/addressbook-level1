@@ -209,23 +209,40 @@ public class AddressBook {
     public static void main(String[] args) {
         showWelcomeMessage();
         if (args.length >= 2) {
-		    showToUser(MESSAGE_INVALID_PROGRAM_ARGS);
-		    exitProgram();
+		    String[] message = { MESSAGE_INVALID_PROGRAM_ARGS };
+			for (String m : message) {
+			    System.out.println(LINE_PREFIX + m);
+			}
+		    showToUser(MESSAGE_GOODBYE, DIVIDER, DIVIDER);
+			System.exit(0);
 		}
 		
 		if (args.length == 1) {
-		    setupGivenFileForStorage(args[0]);
+		    String filePath = args[0];
+			if (!isValidFilePath(filePath)) {
+			    String[] message = { String.format(MESSAGE_INVALID_FILE, filePath) };
+				for (String m : message) {
+				    System.out.println(LINE_PREFIX + m);
+				}
+			    showToUser(MESSAGE_GOODBYE, DIVIDER, DIVIDER);
+				System.exit(0);
+			}
+			
+			storageFilePath = filePath;
+			createFileIfMissing(filePath);
 		}
 		
 		if(args.length == 0) {
-		    setupDefaultFileForStorage();
+		    showToUser(MESSAGE_USING_DEFAULT_FILE);
+			storageFilePath = DEFAULT_STORAGE_FILEPATH;
+			createFileIfMissing(storageFilePath);
 		}
-        loadDataFromStorage();
+        initialiseAddressBookModel(loadPersonsFromFile(storageFilePath));
         while (true) {
             String userCommand = getUserInput();
-            echoUserCommand(userCommand);
+            showToUser("[Command entered:" + userCommand + "]");
             String feedback = executeCommand(userCommand);
-            showResultToUser(feedback);
+            showToUser(feedback, DIVIDER);
         }
     }
 
