@@ -177,7 +177,6 @@ public class AddressBook {
      * such as interface inheritance.
      * ====================================================================================================
      */
-
     /**
      * List of all persons in the address book.
      */
@@ -207,6 +206,7 @@ public class AddressBook {
      */
 
     public static void main(String[] args) {
+
         showToUser(DIVIDER, DIVIDER, VERSION, MESSAGE_WELCOME, DIVIDER);
         if (args.length >= 2) {
 		    String[] message = { MESSAGE_INVALID_PROGRAM_ARGS };
@@ -241,14 +241,17 @@ public class AddressBook {
 		}
         ALL_PERSONS.clear();
 		ALL_PERSONS.addAll(loadPersonsFromFile(storageFilePath));
+      
         while (true) {
             String userCommand = getUserInput();
-            showToUser("[Command entered:" + userCommand + "]");
+            echoUserCommand(userCommand);
             String feedback = executeCommand(userCommand);
+
 			String[] message = { feedback, DIVIDER };
             for (String m : message) {
 			    System.out.println(LINE_PREFIX + m);
 			}
+
         }
     }
 
