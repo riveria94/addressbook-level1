@@ -207,13 +207,16 @@ public class AddressBook {
      */
 
     public static void main(String[] args) {
-        showWelcomeMessage();
+        showToUser(DIVIDER, DIVIDER, VERSION, MESSAGE_WELCOME, DIVIDER);
         if (args.length >= 2) {
 		    String[] message = { MESSAGE_INVALID_PROGRAM_ARGS };
 			for (String m : message) {
 			    System.out.println(LINE_PREFIX + m);
 			}
-		    showToUser(MESSAGE_GOODBYE, DIVIDER, DIVIDER);
+			String[] message1 = { MESSAGE_GOODBYE, DIVIDER, DIVIDER };
+		    for (String m1 : message1) {
+			    System.out.println(LINE_PREFIX + m1);
+			}
 			System.exit(0);
 		}
 		
@@ -224,8 +227,7 @@ public class AddressBook {
 				for (String m : message) {
 				    System.out.println(LINE_PREFIX + m);
 				}
-			    showToUser(MESSAGE_GOODBYE, DIVIDER, DIVIDER);
-				System.exit(0);
+			    exitProgram();
 			}
 			
 			storageFilePath = filePath;
@@ -237,12 +239,16 @@ public class AddressBook {
 			storageFilePath = DEFAULT_STORAGE_FILEPATH;
 			createFileIfMissing(storageFilePath);
 		}
-        initialiseAddressBookModel(loadPersonsFromFile(storageFilePath));
+        ALL_PERSONS.clear();
+		ALL_PERSONS.addAll(loadPersonsFromFile(storageFilePath));
         while (true) {
             String userCommand = getUserInput();
             showToUser("[Command entered:" + userCommand + "]");
             String feedback = executeCommand(userCommand);
-            showToUser(feedback, DIVIDER);
+			String[] message = { feedback, DIVIDER };
+            for (String m : message) {
+			    System.out.println(LINE_PREFIX + m);
+			}
         }
     }
 
@@ -822,11 +828,11 @@ public class AddressBook {
      * @return true if the given person was found and deleted in the model
      */
     private static boolean deletePersonFromAddressBook(String[] exactPerson) {
-        final boolean changed = ALL_PERSONS.remove(exactPerson);
-        if (changed) {
+        final boolean isChanged = ALL_PERSONS.remove(exactPerson);
+        if (isChanged) {
             savePersonsToFile(getAllPersonsInAddressBook(), storageFilePath);
         }
-        return changed;
+        return isChanged;
     }
 
     /**
@@ -1017,12 +1023,12 @@ public class AddressBook {
 
         // phone is last arg, target is from prefix to end of string
         if (indexOfPhonePrefix > indexOfEmailPrefix) {
-            return removePrefixSign(encoded.substring(indexOfPhonePrefix, encoded.length()).trim(),
+            return removePrefix(encoded.substring(indexOfPhonePrefix, encoded.length()).trim(),
                     PERSON_DATA_PREFIX_PHONE);
 
         // phone is middle arg, target is from own prefix to next prefix
         } else {
-            return removePrefixSign(
+            return removePrefix(
                     encoded.substring(indexOfPhonePrefix, indexOfEmailPrefix).trim(),
                     PERSON_DATA_PREFIX_PHONE);
         }
@@ -1040,12 +1046,12 @@ public class AddressBook {
 
         // email is last arg, target is from prefix to end of string
         if (indexOfEmailPrefix > indexOfPhonePrefix) {
-            return removePrefixSign(encoded.substring(indexOfEmailPrefix, encoded.length()).trim(),
+            return removePrefix(encoded.substring(indexOfEmailPrefix, encoded.length()).trim(),
                     PERSON_DATA_PREFIX_EMAIL);
 
         // email is middle arg, target is from own prefix to next prefix
         } else {
-            return removePrefixSign(
+            return removePrefix(
                     encoded.substring(indexOfEmailPrefix, indexOfPhonePrefix).trim(),
                     PERSON_DATA_PREFIX_EMAIL);
         }
@@ -1172,14 +1178,15 @@ public class AddressBook {
      */
 
     /**
-     * Removes sign(p/, d/, etc) from parameter string
+     * Removes prefix(p/, d/, etc) from parameter string
      *
-     * @param s  Parameter as a string
-     * @param sign  Parameter sign to be removed
-     * @return  string without the sign
+     * @param stringInput  Parameter as a string
+     * @param prefix  Parameter prefix to be removed
+     * @return  string without the prefix
      */
-    private static String removePrefixSign(String s, String sign) {
-        return s.replace(sign, "");
+    private static String removePrefix(String stringInput, String prefix) {
+    	String stringOutput = stringInput.substring(prefix.length());
+        return stringOutput;
     }
 
     /**
